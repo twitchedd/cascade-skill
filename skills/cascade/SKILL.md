@@ -1,6 +1,6 @@
 ---
 name: cascade
-description: Animate Unity UI Toolkit (VisualElement / UXML / USS) with the Cascade motion library: tweens, springs, stagger, variants, enter/exit and screen transitions, hover/press interactions, and validated JSON animation sequences. Use when the user asks to animate, fade, slide, bounce, pop in, stagger or transition UI Toolkit elements in a Unity project, or mentions Cascade / Cascade Lite.
+description: "Animate Unity UI Toolkit (VisualElement / UXML / USS) with the Cascade motion library: tweens, springs, stagger, variants, enter/exit and screen transitions, hover/press interactions, and validated JSON animation sequences. Use when the user asks to animate, fade, slide, bounce, pop in, stagger or transition UI Toolkit elements in a Unity project, or mentions Cascade / Cascade Lite."
 ---
 
 # Cascade: motion for Unity UI Toolkit
