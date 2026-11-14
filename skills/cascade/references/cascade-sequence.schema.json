@@ -56,7 +56,12 @@
                   "Height",
                   "Top",
                   "Left",
-                  "Nudge"
+                  "Shake",
+                  "PunchScale",
+                  "PunchRotate",
+                  "Pulse",
+                  "Wiggle",
+                  "Pop"
                 ]
               }
             }
@@ -73,7 +78,9 @@
               "verb": {
                 "enum": [
                   "MoveTo",
-                  "Size"
+                  "Size",
+                  "Nudge",
+                  "Punch"
                 ]
               }
             }
@@ -120,9 +127,17 @@
             "Height",
             "Size",
             "Top",
-            "Left"
+            "Left",
+            "Nudge",
+            "Shake",
+            "Punch",
+            "PunchScale",
+            "PunchRotate",
+            "Pulse",
+            "Wiggle",
+            "Pop"
           ],
-          "description": "Which property to animate. Fade/MoveX/MoveY/Scale/Rotate/Width/Height/Top/Left use 'to'; MoveTo/Size use 'x'/'y'; BackgroundColor/TextColor use 'color'; SlideIn uses 'edge'/'distance'. Width/Height/Size/Top/Left reflow layout."
+          "description": "Which property to animate. Fade/MoveX/MoveY/Scale/Rotate/Width/Height/Top/Left use 'to'; MoveTo/Size use 'x'/'y'; BackgroundColor/TextColor use 'color'; SlideIn uses 'edge'/'distance'. Width/Height/Size/Top/Left reflow layout. Juice verbs start and end at rest and ignore ease/spring: Nudge and Punch use 'x'/'y' (px); Shake 'to' = strength (px); PunchScale 'to' = amount (0.2 = 20% larger); PunchRotate and Wiggle 'to' = degrees; Pulse 'to' = peak scale (1.08); Pop 'to' = overshoot (0.15), scaling in from 0."
         },
         "to": {
           "type": "number",
@@ -134,11 +149,11 @@
         },
         "x": {
           "type": "number",
-          "description": "X target for MoveTo (px) / width for Size (px)."
+          "description": "X target for MoveTo (px) / width for Size (px) / X displacement for Nudge and Punch (px)."
         },
         "y": {
           "type": "number",
-          "description": "Y target for MoveTo (px) / height for Size (px)."
+          "description": "Y target for MoveTo (px) / height for Size (px) / Y displacement for Nudge and Punch (px)."
         },
         "color": {
           "type": "string",

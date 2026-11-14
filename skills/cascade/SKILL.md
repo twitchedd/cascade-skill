@@ -21,6 +21,9 @@ Read `Packages/manifest.json` (and `Packages/` for embedded packages):
 The package also ships its own guide at `Packages/<package>/Documentation~/AI-GUIDE.md`. If it exists,
 read it: it matches the installed version exactly and wins over this file on any detail.
 
+Note the **version** too (the `"version"` in the package's `package.json`, under `Packages/` or
+`Library/PackageCache/com.twitched.cascade*`): APIs marked *1.2.0+* below don't exist in older versions.
+
 **Never emit a Pro-only API into a Lite project.** It will not compile. If the user asks for a Pro
 feature on Lite (springs, stagger, variants…), say it's in Pro and offer the closest Lite equivalent
 (for example an `Ease.OutBack` overshoot instead of a bouncy spring).
@@ -37,12 +40,15 @@ feature on Lite (springs, stagger, variants…), say it's in Pro and offer the c
 ```csharp
 using Cascade;
 
-// verbs before .Then() run together; .Then() starts the next step; .Delay(s) waits
+// verbs before .Then() run together; .Then() starts the next step
 el.Animate()
     .SlideIn(Edge.Bottom, 0.4f)
     .Fade(1f, 0.4f).From(0f).Ease(Ease.OutCubic)
   .Then()
     .MoveY(0f, 0.3f).Ease(Ease.OutBack);
+
+el.Animate().Fade(1f, 0.3f).From(0f).Delay(0.2f);   // modifiers change the verb right before them
+el.Animate().ScaleTo(1.1f, 0.5f).From(1f).Ease(Ease.InOutSine).Loop(LoopMode.PingPong);  // pulse forever
 
 bool finished = await el.Animate().Fade(0f, 0.3f);   // Unity 6 Awaitable; false = cancelled, never throws
 el.StopAnimations();                                  // cancel everything on the element (no OnComplete)
@@ -52,6 +58,13 @@ el.StopAnimations();                                  // cancel everything on th
 `MoveTo(Vector2, s)` · `ScaleTo(multiplier, s)` · `Rotate(deg, s)` · `SlideIn(Edge, s)` ·
 `BackgroundColor(Color, s)` · `TextColor(Color, s)` · `Width` · `Height` · `Size` · `Top` · `Left`.
 Prefer the transform verbs; Width/Height/Size/Top/Left reflow layout.
+
+**1.2.0+, Lite and Pro:**
+- Style verbs: `BorderRadius(px, s)` · `BorderWidth(px, s)` · `BorderColor(Color, s)` · `FontSize(px, s)` ·
+  `Padding(px, s)` · `Tint(Color, s)` (background image tint) · `Right(px, s)` · `Bottom(px, s)`.
+- Juice that starts and ends at rest (no `.From`, no `.Ease`): `Shake(px, s)` for a rejected input,
+  `Punch(Vector2 px, s)` for a bump. They add to a move already running instead of cancelling it.
+- `.At(seconds)`: the verbs after it start that long after the sequence starts, beside the `.Then()` chain.
 
 **Easing:** `.Ease(Ease.OutCubic)`. Names: Linear, In/Out/InOut × Sine, Quad, Cubic, plus OutQuart,
 OutExpo, OutCirc, InBack, OutBack, InOutBack, OutElastic, OutBounce. Also `Ease.FromCurve(curve)`.
@@ -78,6 +91,12 @@ card.Variants()
     .State("normal",   s => s.ScaleTo(1f).FadeTo(1f).In(0.35f).WithSpring(SpringPreset.Snappy))
     .State("featured", s => s.ScaleTo(1.2f).FadeTo(1f).In(0.35f).WithSpring(SpringPreset.Bouncy));
 card.To("featured");
+
+// 1.2.0+ (Pro)
+badge.Animate().Pop(0.15f, 0.35f);                    // scale in from 0 with a 15% overshoot
+coin.Animate().PunchScale(0.25f, 0.45f);              // also PunchRotate, Pulse(1.08f, s), Wiggle(deg, s)
+field.Animate().Shake(6f, 0.5f, vibrato: 8, decay: 2f, axis: ShakeAxis.Both);
+card.Animate().MoveX(slotX, 0f).Spring(SpringPreset.Snappy).WithVelocity(dragVelocityX);  // drag release
 ```
 
 ## Rules that prevent the common mistakes
@@ -91,13 +110,25 @@ card.To("featured");
    `AnimateIn`/`AnimateOut` plus manual `style.display` edits.
 5. **Don't add lifecycle guards.** Animations already cancel when an element leaves its panel, and
    reduced motion (`MotionSettings.ReduceMotion`) is honoured globally.
-6. **Natural durations:** entrances 0.25–0.5 s, micro-interactions 0.1–0.2 s, ambient pulses 0.5–1 s.
+6. **Modifiers change only the verb right before them** (`From`, `Ease`, `Spring`, `Delay`, `Loop`).
+   - `.Delay(s)` delays that verb, so a `.Delay()` before any verb does nothing.
+   - `.Loop(mode)` repeats that one verb, never a `.Then()` chain: `ScaleTo(1.1f).Then().ScaleTo(1f).Loop()`
+     loops only the shrink. Grow-and-return forever is one verb with `LoopMode.PingPong` (each leg = the
+     duration), or `Pulse(1.1f, 1f).Loop(LoopMode.Restart)` on Pro.
+7. **Natural durations:** entrances 0.25–0.5 s, micro-interactions 0.1–0.2 s, ambient pulses 0.5–1 s.
+8. **1.2.0+: fix every `CASCnnn` compiler warning** in code you wrote. Cascade ships a code checker; each
+   warning marks animation code that compiles but won't do what it says (milliseconds, opacity out of range,
+   an ignored `From()`, an endless loop that something awaits). The message says how to fix it.
+9. **1.2.0+ Pro:** if the project has no `AGENTS.md`/`CLAUDE.md` section on Cascade, suggest
+   *Tools ▸ Cascade ▸ Set Up AI Assistants*, which writes one for the installed version.
 
 ## Lite vs Pro
 
 | Feature | Lite (free) | Pro |
 |---|---|---|
-| `Animate()`, all verbs, `.Then()`, `.Delay()`, `.Ease()`, `.From()`, await, `StopAnimations()` | yes | yes |
+| `Animate()`, all verbs, `.Then()`, `.Delay()`, `.Loop()`, `.Ease()`, `.From()`, await, `StopAnimations()` | yes | yes |
+| 1.2.0+: style verbs, `Shake`, `Punch`, `.At()`, code checks | yes | yes |
+| 1.2.0+: tunable `Shake`, `PunchScale`, `PunchRotate`, `Pulse`, `Wiggle`, `Pop`, `.WithVelocity()` | — | yes |
 | `.Spring()`, `.WithResponse()` | — | yes |
 | `AnimateEach()` / `.Stagger()` | — | yes |
 | `Variants()` / `To()` | — | yes |

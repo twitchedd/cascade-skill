@@ -10,7 +10,7 @@ Source: the Pro package's `Documentation~/AI-GUIDE.md`, sections 1–3. The inst
     {
       "actions": [                   // actions in a step run TOGETHER (parallel)
         { "verb": "SlideIn", "edge": "Bottom", "distance": 48, "duration": 0.4, "ease": "OutCubic" },
-        { "verb": "Fade",    "to": 1, "duration": 0.4, "ease": "OutCubic" }
+        { "verb": "Fade",    "from": 0, "to": 1, "duration": 0.4, "ease": "OutCubic" }
       ]
     },
     {
@@ -39,6 +39,13 @@ starts when the previous one finishes. This is the same as chaining fluent verbs
 | `BackgroundColor` | `color` | background color | cheap |
 | `TextColor` | `color` | text color | cheap |
 | `Nudge` | `x`, `y` (px) | displace and return — bumps, shakes, wobbles. **Additive:** composes with a `MoveX`/`MoveY` already animating the element instead of cancelling it | cheap |
+| `Shake` *(1.2.0+)* | `to` (px) | shake side to side, fading out, back to rest | cheap |
+| `Punch` *(1.2.0+)* | `x`, `y` (px) | bump, swing back past rest a little, settle | cheap |
+| `PunchScale` *(1.2.0+)* | `to` (0.2 = 20% larger) | swell and wobble back to size | cheap |
+| `PunchRotate` *(1.2.0+)* | `to` (degrees) | twist and wobble back | cheap |
+| `Pulse` *(1.2.0+)* | `to` (1.08 = 8% larger) | one heartbeat; loops cleanly | cheap |
+| `Wiggle` *(1.2.0+)* | `to` (degrees) | rotation wobble that eases in and out | cheap |
+| `Pop` *(1.2.0+)* | `to` (0.15 = 15% overshoot) | scale in from 0 with an overshoot | cheap |
 | `Width` | `to` (px) | width | **reflows layout** |
 | `Height` | `to` (px) | height | **reflows layout** |
 | `Size` | `x`, `y` (px) | width, height | **reflows layout** |
