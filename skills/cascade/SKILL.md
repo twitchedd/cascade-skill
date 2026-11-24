@@ -58,6 +58,8 @@ el.StopAnimations();                                  // cancel everything on th
 `MoveTo(Vector2, s)` · `ScaleTo(multiplier, s)` · `Rotate(deg, s)` · `SlideIn(Edge, s)` ·
 `BackgroundColor(Color, s)` · `TextColor(Color, s)` · `Width` · `Height` · `Size` · `Top` · `Left`.
 Prefer the transform verbs; Width/Height/Size/Top/Left reflow layout.
+Don't invent verb names. There is no `FadeIn()`, `FadeOut()` or `SlideOut()`: fade in with
+`Fade(1f, s).From(0f)`, fade out with `Fade(0f, s)`.
 
 **1.2.0+, Lite and Pro:**
 - Style verbs: `BorderRadius(px, s)` · `BorderWidth(px, s)` · `BorderColor(Color, s)` · `FontSize(px, s)` ·
@@ -119,7 +121,9 @@ card.Animate().MoveX(slotX, 0f).Spring(SpringPreset.Snappy).WithVelocity(dragVel
 8. **1.2.0+: fix every `CASCnnn` compiler warning** in code you wrote. Cascade ships a code checker; each
    warning marks animation code that compiles but won't do what it says (milliseconds, opacity out of range,
    an ignored `From()`, an endless loop that something awaits). The message says how to fix it.
-9. **1.2.0+ Pro:** if the project has no `AGENTS.md`/`CLAUDE.md` section on Cascade, suggest
+9. **Stagger with Cascade, not the scheduler.** On Pro, `items.AnimateEach()…Stagger(step)`; on Lite, a loop
+   with `.Delay(i * step)` on each verb. Never a `schedule.Execute().StartingIn(ms)` loop.
+10. **1.2.0+ Pro:** if the project has no `AGENTS.md`/`CLAUDE.md` section on Cascade, suggest
    *Tools ▸ Cascade ▸ Set Up AI Assistants*, which writes one for the installed version.
 
 ## Lite vs Pro
